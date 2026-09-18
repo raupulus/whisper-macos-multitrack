@@ -1,0 +1,111 @@
+# ==============================================================================
+# whisper-macos-multitrack - .gitignore
+# Autor: Raúl Caro Pastorino (@raupulus) - https://raupulus.dev
+# ==============================================================================
+
+# Entorno virtual y configuración local del usuario
+.venv/
+env/
+venv/
+ENV/
+env.py
+.env
+.env.*
+!.env.example
+!.env.example.py
+
+# Python & Caché
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.mypy_cache/
+
+# Archivos multimedia de entrada y salida (audio y vídeo)
+audios/*
+!audios/.gitkeep
+audios/**
+!audios/.gitkeep
+*.mka
+*.mp3
+*.m4a
+*.wav
+*.aac
+*.ogg
+*.flac
+*.opus
+*.mp4
+*.mkv
+
+# Transcripciones y temporales
+*.temp.wav
+*.tmp
+temp_tracks/
+/tmp/
+
+# Modelos locales y cachés de IA
+.cache/
+cache/
+.turbo/
+.next/
+huggingface/
+models/
+
+# Dependencias y librerías
+node_modules/
+vendor/
+
+# Logs y bases de datos locales
+*.log
+logs/
+*.sql
+*.sqlite
+*.sqlite3
+*.db
+
+# Editores de código e IDEs
+.idea/
+.vscode/
+.cursor/
+*.suo
+*.user
+*.sln.docstates
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+.fleet/
+.zed/
+
+# Archivos de sistema (macOS / Windows / Linux)
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+Icon?
+Thumbs.db
+ehthumbs.db
+desktop.ini
+.Spotlight-V100
+.Trashes
+$RECYCLE.BIN/
+.fseventsd
+.DocumentRevisions-V100
