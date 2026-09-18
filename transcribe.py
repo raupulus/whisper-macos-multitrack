@@ -273,14 +273,14 @@ def write_combined_conversation_markdown(
     tagged = []
     for s in p1_segments:
         tagged.append({
-            "speaker": "Tú",
+            "speaker": "Entrada 1",
             "start": s.get("start", 0.0),
             "end": s.get("end", 0.0),
             "text": s.get("text", "").strip()
         })
     for s in p2_segments:
         tagged.append({
-            "speaker": "Colegas",
+            "speaker": "Entrada 2",
             "start": s.get("start", 0.0),
             "end": s.get("end", 0.0),
             "text": s.get("text", "").strip()
@@ -293,8 +293,8 @@ def write_combined_conversation_markdown(
         f"# Conversación Combinada: {source_name}",
         "",
         f"- **Archivo original:** `{source_name}`",
-        f"- **Pista 1 (Tú):** {p1_label}",
-        f"- **Pista 2 (Colegas):** {p2_label}",
+        f"- **Pista 1:** {p1_label}",
+        f"- **Pista 2:** {p2_label}",
     ]
     if audio_ref:
         lines.append(f"- **Audio de referencia:** `{audio_ref}`")
@@ -375,10 +375,9 @@ def process_audio_file(
 
             stream_title = stream_info.get("tags", {}).get("title") or stream_info.get("tags", {}).get("TITLE")
             if stream_title:
-                role_suffix = " (Tú / Micrófono)" if idx == 0 else ""
-                track_role = f"Pista {track_num}: {stream_title}{role_suffix}"
+                track_role = f"Pista {track_num}: {stream_title}"
             else:
-                track_role = "Pista 1 (Micrófono / Tú)" if idx == 0 else f"Pista {track_num} (Audio externo / Amigos)"
+                track_role = f"Pista {track_num} (Fuente de entrada {track_num})"
 
             track_labels[track_num] = track_role
 
@@ -434,8 +433,8 @@ def process_audio_file(
                 # Si los segmentos no estaban en memoria porque se omitió la transcripción, leerlos del .md
                 p1_segs = track_segments.get(1) or parse_markdown_segments(out_dir / f"{base_name}_pista1.md")
                 p2_segs = track_segments.get(2) or parse_markdown_segments(out_dir / f"{base_name}_pista2.md")
-                p1_lbl = track_labels.get(1, "Pista 1 (Tú)")
-                p2_lbl = track_labels.get(2, "Pista 2 (Colegas)")
+                p1_lbl = track_labels.get(1, "Pista 1 (Fuente de entrada 1)")
+                p2_lbl = track_labels.get(2, "Pista 2 (Fuente de entrada 2)")
 
                 write_combined_conversation_markdown(
                     output_file=combined_md_file,

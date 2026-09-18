@@ -2,7 +2,7 @@
 
 Herramienta CLI de transcripción local de audio de alta fidelidad, diseñada y optimizada específicamente para **Apple Silicon (MacBook M1 Pro, 16 GB RAM)** con aceleración GPU Metal nativa mediante el framework **MLX** (`mlx-whisper`).
 
-Diseñada para transcribir tanto notas de voz rápidas del teléfono (`.m4a`, `.mp3`, etc.) como grabaciones multipista de videollamadas largas de varias horas (1-5h) grabadas con OBS (`.mka`).
+Diseñada para transcribir tanto notas de voz rápidas (`.m4a`, `.mp3`, etc.) como grabaciones multipista de reuniones de trabajo, conferencias o sesiones de larga duración (1-5h) grabadas con OBS, DAW o suites de videoconferencia (`.mka`).
 
 ---
 
@@ -19,20 +19,20 @@ Diseñada para transcribir tanto notas de voz rápidas del teléfono (`.m4a`, `.
 * 🔒 **100% Local y Privado:** Todo el procesamiento ocurre íntegramente en tu máquina local. Ningún fragmento de audio, dato ni texto sale jamás a servidores externos o APIs de terceros.
 * ⚡ **Aceleración Metal Nativa (MLX):** Aprovecha la GPU integrada y los 200 GB/s de ancho de banda de memoria unificada del chip M1 Pro mediante el framework de Apple `mlx-whisper`.
 * 🎯 **Máxima Calidad en Español (`large-v3`):** Configurado por defecto con el modelo completo **`whisper-large-v3`**, optimizado para capturar vocabulario, acentos y puntuación cuidada en español de España.
-* 👥 **Diarización Natural Multipista (OBS `.mka`):**
-  * Detecta automáticamente las pistas independientes de audio grabadas con OBS.
-  * Procesa cada pista de forma aislada para evitar que las voces se solapen:
-    * `_pista1.md`: Tu micrófono personal (Tú).
-    * `_pista2.md`: Audio externo de la llamada / Discord (Colegas).
-    * `_pista3.md`: Audio del sistema, videojuego o música.
-  * **Transcripción entrelazada:** Genera `<nombre>_pista1_y_pista2_combinados.md` ordenando cronológicamente el diálogo de las dos pistas segundo a segundo.
+* 👥 **Diarización Natural Multipista (.mka):**
+  * Detecta automáticamente las pistas independientes de audio del contenedor multimedia.
+  * Procesa cada pista de forma aislada para evitar solapamientos acústicos:
+    * `_pista1.md`: Fuente de entrada 1 (Micrófono principal / Presentador).
+    * `_pista2.md`: Fuente de entrada 2 (Participantes remotos / Llamada).
+    * `_pista3.md`: Fuente de entrada 3 (Audio auxiliar / Presentación / Sistema).
+  * **Transcripción entrelazada:** Genera `<nombre>_pista1_y_pista2_combinados.md` ordenando cronológicamente el diálogo de las dos fuentes principales segundo a segundo.
 * 🔇 **Protección Antihalucinación en Silencios:**
   * Configurado con `condition_on_previous_text=False`, `word_timestamps=True` y `hallucination_silence_threshold=2.0`.
   * Evita los bucles infinitos típicos de Whisper (como repetir frases aleatorias durante minutos de silencio o pausas largas).
 * 📁 **Organización Automática en Subdirectorios:** Cada archivo analizado agrupa todas sus salidas (`.md` y `.mp3`) dentro de una subcarpeta con su propio nombre base.
 * 🎵 **Exportación Inteligente de Audios Ligeros:**
   * **Audio histórico combinado (Pistas 1 + 2):** Mezclado en mono equilibrado (`amix`) a **128 kbps** para archivar la conversación ahorrando hasta un 70% de espacio en disco.
-  * **Audio de alta fidelidad para clips (Pista 3):** Exportado en estéreo a **192 kbps** para edición de vídeo o reutilización en producciones.
+  * **Audio independiente de alta fidelidad (Pista 3):** Exportado en estéreo a **192 kbps** para archivo o edición auxiliar.
 * 🛡️ **Preservación Absoluta:** Los archivos originales (`.mka`, `.m4a`, etc.) **NUNCA se borran ni modifican**.
 * ⚡ **Idempotencia:** Si los archivos generados ya existen, se omiten al instante para ahorrar batería y ciclos de GPU (usa `--force` para rehacerlos).
 
@@ -89,7 +89,7 @@ El archivo `env.py` (ignorado por Git para proteger tus preferencias personales)
 
 ```python
 # Número máximo de pistas a procesar en archivos multipista (.mka)
-# 2 = solo voz (Tú + Colegas), 3 = incluye pista de juego/música, None = todas
+# 2 = solo entradas 1 y 2, 3 = incluye pista auxiliar/sistema, None = todas
 MAX_TRACKS = 3
 
 # Organización: agrupar salidas en una subcarpeta con el nombre del audio
@@ -122,8 +122,8 @@ HALLUCINATION_SILENCE_THRESHOLD = 2.0
 1. Coloca tus audios o grabaciones en la carpeta `audios/`:
    ```
    audios/
-   ├── nota_idea_1.m4a
-   └── 2026-09-02_21-31-43.mka
+   ├── nota_voz.m4a
+   └── reunion_proyecto_0600.mka
    ```
 
 2. Ejecuta el comando principal (se reinvoca automáticamente en `.venv`):
@@ -134,17 +134,17 @@ HALLUCINATION_SILENCE_THRESHOLD = 2.0
 3. Se generarán automáticamente las subcarpetas con todos los contenidos:
    ```
    audios/
-   ├── nota_idea_1.m4a
-   ├── nota_idea_1/
-   │   └── nota_idea_1.md
-   ├── 2026-09-02_21-31-43.mka                                    # Original intacto
-   └── 2026-09-02_21-31-43/
-       ├── 2026-09-02_21-31-43_pista1.md                         # Transcripción Pista 1 (Tú)
-       ├── 2026-09-02_21-31-43_pista2.md                         # Transcripción Pista 2 (Colegas)
-       ├── 2026-09-02_21-31-43_pista3.md                         # Transcripción Pista 3 (Juego/Música)
-       ├── 2026-09-02_21-31-43_pista1_y_pista2_combinados.md     # Diálogo entrelazado Tú + Colegas
-       ├── 2026-09-02_21-31-43_pista1_y_pista2_combinados.mp3    # Audio histórico mono a 128 kbps
-       └── 2026-09-02_21-31-43_pista3.mp3                        # Audio para clips/edición a 192 kbps
+   ├── nota_voz.m4a
+   ├── nota_voz/
+   │   └── nota_voz.md
+   ├── reunion_proyecto_0600.mka                                    # Original intacto
+   └── reunion_proyecto_0600/
+       ├── reunion_proyecto_0600_pista1.md                         # Transcripción Pista 1 (Fuente de entrada 1)
+       ├── reunion_proyecto_0600_pista2.md                         # Transcripción Pista 2 (Fuente de entrada 2)
+       ├── reunion_proyecto_0600_pista3.md                         # Transcripción Pista 3 (Audio auxiliar)
+       ├── reunion_proyecto_0600_pista1_y_pista2_combinados.md     # Diálogo entrelazado Entrada 1 + Entrada 2
+       ├── reunion_proyecto_0600_pista1_y_pista2_combinados.mp3    # Audio histórico mono a 128 kbps
+       └── reunion_proyecto_0600_pista3.mp3                        # Audio auxiliar independiente a 192 kbps
    ```
 
 ### 2. Procesar una Ruta Específica
@@ -180,23 +180,23 @@ Puedes pasar como argumento cualquier archivo o directorio externo:
 ### Transcripción Combinada (`..._pista1_y_pista2_combinados.md`):
 
 ```markdown
-# Conversación Combinada: 2026-09-02_21-31-43.mka
+# Conversación Combinada: reunion_proyecto_0600.mka
 
-- **Archivo original:** `2026-09-02_21-31-43.mka`
-- **Pista 1 (Tú):** Pista 1: Mi voz en off (Tú / Micrófono)
-- **Pista 2 (Colegas):** Pista 2: Voz de otros participantes
-- **Audio de referencia:** `2026-09-02_21-31-43_pista1_y_pista2_combinados.mp3`
-- **Fecha:** 2026-09-18 07:05:43
+- **Archivo original:** `reunion_proyecto_0600.mka`
+- **Pista 1:** Pista 1: Micrófono principal (Presentador)
+- **Pista 2:** Pista 2: Participantes remotos (Llamada)
+- **Audio de referencia:** `reunion_proyecto_0600_pista1_y_pista2_combinados.mp3`
+- **Fecha:** 2026-10-01 06:00:00
 
 ---
 
 ## Diálogo
 
-**[00:00:23 -> 00:00:25] Tú:** Hola, ya estamos conectados.
+**[00:00:05 -> 00:00:09] Entrada 1:** Buenos días a todos, son las seis de la mañana, comenzamos la reunión de seguimiento del proyecto.
 
-**[00:00:29 -> 00:00:31] Colegas:** ¡Perfecto, te escuchamos fuerte y claro!
+**[00:00:10 -> 00:00:14] Entrada 2:** Buenos días, listos para revisar los objetivos y el estado de la entrega.
 
-**[00:00:32 -> 00:00:35] Tú:** Genial, arrancamos con la revisión del proyecto.
+**[00:00:15 -> 00:00:20] Entrada 1:** Perfecto, comparto la pantalla para repasar los puntos clave del sprint.
 ```
 
 ---

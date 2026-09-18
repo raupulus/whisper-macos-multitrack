@@ -9,11 +9,11 @@ Guía operativa y contexto de arquitectura para agentes de IA que interactúen c
 `whisper-macos-multitrack` es una herramienta CLI para transcripción de audio local de alta fidelidad, diseñada y optimizada específicamente para **Apple Silicon (MacBook M1 Pro, 16 GB RAM)** utilizando el framework nativo **MLX** (`mlx-whisper`) con aceleración por GPU Metal.
 
 ### Casos de uso principales:
-1. **Notas de voz y grabaciones cortas:** Grabaciones tomadas con el teléfono (`.m4a`, `.mp3`, `.wav`, etc.).
-2. **Llamadas largas multipista (OBS):** Grabaciones de videollamadas de 1 a 5 horas en formato `.mka` con pistas separadas de audio:
-   - Pista 1: Micrófono personal (Tú).
-   - Pista 2: Audio del sistema, llamadas o Discord (Colegas).
-   - Pista 3: Audio de videojuegos, clips o música.
+1. **Notas de voz y grabaciones cortas:** Grabaciones tomadas con el teléfono o dictados (`.m4a`, `.mp3`, `.wav`, etc.).
+2. **Grabaciones largas multipista (OBS / DAW / Videoconferencias):** Grabaciones de reuniones o sesiones de trabajo en formato `.mka` con pistas separadas de audio:
+   - Pista 1: Fuente de entrada 1 (Micrófono principal / Presentador).
+   - Pista 2: Fuente de entrada 2 (Participantes remotos / Audio secundario).
+   - Pista 3: Fuente de entrada 3 (Audio auxiliar / Presentación / Sistema).
 
 ---
 
@@ -52,9 +52,9 @@ whisper-macos-multitrack/
    - Comprueba `Path(sys.prefix).resolve() != VENV_DIR.resolve()` para evitar bucles infinitos de reinvocación con symlinks de Homebrew.
    - Se reinvoca automáticamente con el intérprete de `.venv` sin requerir `source .venv/bin/activate`.
 
-2. **Detección multipista (`ffprobe`) y títulos de OBS:**
+2. **Detección multipista (`ffprobe`) y metadatos de pistas:**
    - Usa `ffprobe` con salida JSON para detectar el número de streams de audio y sus etiquetas de metadatos (`stream_tags=title`).
-   - Detecta títulos nativos de OBS como *"Mi voz en off"* o *"Voz de otros participantes"* y los integra en las etiquetas y encabezados.
+   - Detecta títulos nativos configurados en las pistas y los integra en las etiquetas y encabezados.
 
 3. **Organización en subdirectorios:**
    - Crea automáticamente una subcarpeta con el nombre base del archivo (ej. `audios/<nombre_archivo>/`) y guarda allí todas las salidas generadas.
@@ -68,7 +68,7 @@ whisper-macos-multitrack/
 
 5. **Mezcla y exportación de audio:**
    - **Pistas 1 y 2:** Se combinan en un único archivo mono equilibrado con filtro `amix=inputs=2:duration=longest:dropout_transition=0:normalize=0` a **128 kbps** (`<nombre>_pista1_y_pista2_combinados.mp3`). Se suministra el archivo dos veces a ffmpeg (`-i input -i input`) para emplear demuxers independientes por pista y evitar bloqueos/cortes prematuros por interleaving irregular en archivos `.mka` de OBS.
-   - **Pista 3:** Se extrae de forma independiente a **192 kbps** (`<nombre>_pista3.mp3`) para edición de vídeo o banco de clips.
+   - **Pista 3:** Se extrae de forma independiente a **192 kbps** (`<nombre>_pista3.mp3`) para archivo independiente o edición auxiliar.
 
 6. **Transcripción combinada de diálogo:**
    - Transcribe pistas de forma aislada para evitar solapamientos acústicos.

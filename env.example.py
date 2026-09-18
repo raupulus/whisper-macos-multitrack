@@ -9,8 +9,8 @@ Para personalizar los parámetros:
 
 # Número máximo de pistas de audio a procesar en archivos multipista (.mka).
 # Ejemplo:
-#   MAX_TRACKS = 2    -> Procesa pistas 1 y 2
-#   MAX_TRACKS = 3    -> Procesa pistas 1, 2 y 3 (Tú, Colegas y Audio del juego/música)
+#   MAX_TRACKS = 2    -> Procesa pistas 1 y 2 (Entrada 1 y Entrada 2)
+#   MAX_TRACKS = 3    -> Procesa pistas 1, 2 y 3 (Entrada 1, Entrada 2 y Audio auxiliar)
 #   MAX_TRACKS = None -> Procesa todas las pistas disponibles
 MAX_TRACKS = 3
 
@@ -25,7 +25,7 @@ EXPORT_AUDIOS = True
 # Pistas 1 y 2 combinadas en un único archivo de audio mono equilibrado (histórico):
 BITRATE_CONVERSACION = "128k"
 
-# Pista 3 de alta fidelidad para clips y edición de vídeo (juego/música):
+# Pista 3 de alta fidelidad para archivo independiente o edición (audio auxiliar/sistema):
 BITRATE_PISTA3 = "192k"
 
 # --- TRANSCRIPCIONES ---
