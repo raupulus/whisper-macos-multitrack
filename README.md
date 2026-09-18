@@ -142,7 +142,7 @@ HALLUCINATION_SILENCE_THRESHOLD = 2.0
        ├── reunion_proyecto_0600_pista1.md                         # Transcripción Pista 1 (Fuente de entrada 1)
        ├── reunion_proyecto_0600_pista2.md                         # Transcripción Pista 2 (Fuente de entrada 2)
        ├── reunion_proyecto_0600_pista3.md                         # Transcripción Pista 3 (Audio auxiliar)
-       ├── reunion_proyecto_0600_pista1_y_pista2_combinados.md     # Diálogo entrelazado Entrada 1 + Entrada 2
+       ├── reunion_proyecto_0600_pista1_y_pista2_combinados.md     # Diálogo entrelazado Tú + Otros participantes
        ├── reunion_proyecto_0600_pista1_y_pista2_combinados.mp3    # Audio histórico mono a 128 kbps
        └── reunion_proyecto_0600_pista3.mp3                        # Audio auxiliar independiente a 192 kbps
    ```
@@ -183,8 +183,8 @@ Puedes pasar como argumento cualquier archivo o directorio externo:
 # Conversación Combinada: reunion_proyecto_0600.mka
 
 - **Archivo original:** `reunion_proyecto_0600.mka`
-- **Pista 1:** Pista 1: Micrófono principal (Presentador)
-- **Pista 2:** Pista 2: Participantes remotos (Llamada)
+- **Pista 1 (Tú):** Pista 1: Micrófono principal (Presentador)
+- **Pista 2 (Otros participantes):** Pista 2: Participantes remotos (Llamada)
 - **Audio de referencia:** `reunion_proyecto_0600_pista1_y_pista2_combinados.mp3`
 - **Fecha:** 2026-10-01 06:00:00
 
@@ -192,11 +192,11 @@ Puedes pasar como argumento cualquier archivo o directorio externo:
 
 ## Diálogo
 
-**[00:00:05 -> 00:00:09] Entrada 1:** Buenos días a todos, son las seis de la mañana, comenzamos la reunión de seguimiento del proyecto.
+**[00:00:05 -> 00:00:09] Tú:** Buenos días a todos, son las seis de la mañana, comenzamos la reunión de seguimiento del proyecto.
 
-**[00:00:10 -> 00:00:14] Entrada 2:** Buenos días, listos para revisar los objetivos y el estado de la entrega.
+**[00:00:10 -> 00:00:14] Otros participantes:** Buenos días, listos para revisar los objetivos y el estado de la entrega.
 
-**[00:00:15 -> 00:00:20] Entrada 1:** Perfecto, comparto la pantalla para repasar los puntos clave del sprint.
+**[00:00:15 -> 00:00:20] Tú:** Perfecto, comparto la pantalla para repasar los puntos clave del sprint.
 ```
 
 ---
