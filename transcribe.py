@@ -408,7 +408,7 @@ def process_audio_file(
 
         # 2. Exportar audio combinado de Pistas 1 y 2 (128 kbps mono)
         combined_audio_filename = None
-        if export_audios and num_streams >= 2:
+        if export_audios and num_streams >= 2 and (max_tracks is None or max_tracks >= 2):
             combined_audio_file = out_dir / f"{base_name}_pista1_y_pista2_combinados.mp3"
             combined_audio_filename = combined_audio_file.name
             if combined_audio_file.exists() and not force:
@@ -425,7 +425,7 @@ def process_audio_file(
                 export_track_audio(file_path, 2, pista3_audio_file, bitrate=bitrate_p3, track_label="Pista 3")
 
         # 4. Generar Markdown combinado entrelazado (Pista 1 y Pista 2)
-        if generate_combined_chat and num_streams >= 2:
+        if generate_combined_chat and num_streams >= 2 and (max_tracks is None or max_tracks >= 2):
             combined_md_file = out_dir / f"{base_name}_pista1_y_pista2_combinados.md"
             if combined_md_file.exists() and not force:
                 print(f"  [=] Transcripción combinada ya existe ({combined_md_file.name}). Omitiendo.")
@@ -476,6 +476,37 @@ def process_audio_file(
                 tmp_wav_path.unlink()
 
 
+def print_info() -> None:
+    """Muestra información rápida de uso y ejemplos al invocar el comando sin argumentos."""
+    print("=" * 68)
+    print("  WHISPER LOCAL - Transcriptor de Audio para Apple Silicon Metal")
+    print(f"  Versión: 1.1.0 | Autor: {__author__} ({__email__})")
+    print("=" * 68)
+    print("""
+USO:
+  transcribe all [opciones]              Procesa todos los audios del directorio actual
+                                         (o 'audios/' si se ejecuta dentro del repositorio)
+  transcribe <archivo> [opciones]        Procesa un archivo específico (.mka, .mp3, .m4a, ...)
+  transcribe <directorio> [opciones]     Procesa todos los audios de la carpeta indicada
+
+OPCIONES PRINCIPALES:
+  -t, --max-tracks N    Número máx. de pistas a procesar (ej. -t 1 para solo voz principal)
+  -m, --model MODEL     Modelo MLX-Whisper (por defecto: mlx-community/whisper-large-v3-mlx)
+  -l, --language LANG   Código de idioma (por defecto: es)
+  -p, --prompt TEXT     Prompt inicial para guiar contexto y ortografía
+  -f, --force           Fuerza la re-transcripción aunque ya existan salidas
+  --no-export-audios    Desactiva la exportación de audio MP3 (mezcla de conversación)
+  --no-combined-chat    Desactiva la generación del markdown con diálogo entrelazado
+  -h, --help            Muestra la ayuda técnica completa con todos los parámetros
+
+EJEMPLOS:
+  transcribe all                         # Transcribir todos los audios del directorio actual
+  transcribe all -t 1                    # Transcribir solo Pista 1 (voz en off) de todos
+  transcribe grabacion.mka               # Transcribir un archivo específico
+  transcribe /ruta/a/audios/             # Transcribir audios de una carpeta concreta
+""")
+
+
 def main() -> None:
     check_dependencies()
 
@@ -483,10 +514,10 @@ def main() -> None:
         description="Transcripción local optimizada para Apple Silicon (MacBook M1 Pro)."
     )
     parser.add_argument(
-        "path",
+        "target",
         nargs="?",
-        default=DEFAULT_AUDIO_DIR,
-        help=f"Ruta a una carpeta con audios o a un archivo específico (por defecto: '{DEFAULT_AUDIO_DIR}')"
+        default=None,
+        help="Archivo, carpeta o 'all' para procesar audios del directorio actual (o 'audios/' dentro del repositorio)."
     )
     parser.add_argument(
         "--model", "-m",
@@ -532,7 +563,22 @@ def main() -> None:
     )
 
     args = parser.parse_args()
-    target_path = Path(args.path)
+
+    if args.target is None:
+        print_info()
+        return
+
+    script_dir = Path(__file__).resolve().parent
+    cwd = Path.cwd().resolve()
+
+    if args.target.lower() == "all":
+        # Si se invoca desde la raíz del proyecto, usa DEFAULT_AUDIO_DIR
+        if cwd == script_dir and (script_dir / DEFAULT_AUDIO_DIR).exists():
+            target_path = script_dir / DEFAULT_AUDIO_DIR
+        else:
+            target_path = cwd
+    else:
+        target_path = Path(args.target).expanduser().resolve()
 
     if not target_path.exists():
         sys.exit(f"Error: La ruta especificada no existe: {target_path}")

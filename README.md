@@ -117,7 +117,39 @@ HALLUCINATION_SILENCE_THRESHOLD = 2.0
 
 ## 💻 Modo de Uso
 
-### 1. Flujo Estándar (Carpeta `audios/`)
+### 1. Comando Global del Sistema (`transcribe`)
+
+El comando `transcribe` está disponible globalmente en la terminal (vía alias en `~/.zshrc_custom` y `~/.bashrc_custom`, o symlink en `~/.local/bin/transcribe`).
+
+* **Mostrar información y ayuda rápida:**
+  ```bash
+  transcribe
+  ```
+  *(Al ejecutarse sin argumentos, muestra el banner informativo, opciones y ejemplos sin realizar acciones).*
+
+* **Procesar todos los audios de la carpeta actual:**
+  ```bash
+  transcribe all
+  ```
+  - Si se ejecuta dentro del repositorio, procesa la carpeta `audios/`.
+  - Si se ejecuta desde cualquier otra carpeta (ej. notas de voz descargadas), procesa todos los audios de esa misma carpeta y crea allí los subdirectorios con las transcripciones.
+  - **No es recursivo**: Solo procesa los archivos del directorio raíz y no entra en subdirectorios generados.
+
+* **Procesar únicamente la pista 1 (ej. solo tu voz o micrófono):**
+  ```bash
+  transcribe all -t 1
+  ```
+
+* **Procesar un archivo o directorio específico:**
+  ```bash
+  transcribe grabacion.mka
+  transcribe ~/Descargas/nota_voz.m4a
+  transcribe /Volumes/Grabaciones/
+  ```
+
+---
+
+### 2. Flujo Estándar (Carpeta `audios/` en el Repositorio)
 
 1. Coloca tus audios o grabaciones en la carpeta `audios/`:
    ```
@@ -126,9 +158,11 @@ HALLUCINATION_SILENCE_THRESHOLD = 2.0
    └── reunion_proyecto_0600.mka
    ```
 
-2. Ejecuta el comando principal (se reinvoca automáticamente en `.venv`):
+2. Ejecuta el comando principal:
    ```bash
-   ./transcribe.py
+   transcribe all
+   # o bien directamente dentro del repositorio:
+   ./transcribe.py all
    ```
 
 3. Se generarán automáticamente las subcarpetas con todos los contenidos:
@@ -147,24 +181,14 @@ HALLUCINATION_SILENCE_THRESHOLD = 2.0
        └── reunion_proyecto_0600_pista3.mp3                        # Audio auxiliar independiente a 192 kbps
    ```
 
-### 2. Procesar una Ruta Específica
-
-Puedes pasar como argumento cualquier archivo o directorio externo:
-
-```bash
-# Procesar un archivo individual
-./transcribe.py ~/Desktop/grabacion.mka
-
-# Procesar una carpeta personalizada
-./transcribe.py /Volumes/DiscoExterno/Grabaciones/
-```
+---
 
 ### 3. Opciones del CLI
 
 | Argumento | Descripción |
 | :--- | :--- |
-| `path` | Ruta a la carpeta o archivo a transcribir (por defecto: `audios`) |
-| `-t`, `--max-tracks` | Límite de pistas a procesar (ej. `-t 2` o `-t 3`) |
+| `target` | Archivo, directorio o `all` (carpeta actual / `audios/`) |
+| `-t`, `--max-tracks` | Límite de pistas a procesar (ej. `-t 1` para solo pista 1, `-t 2`, etc.) |
 | `-m`, `--model` | Modelo de HuggingFace/MLX (ej. `mlx-community/whisper-large-v3-turbo`) |
 | `-l`, `--language` | Código de idioma ISO (por defecto: `es`) |
 | `-p`, `--prompt` | Prompt inicial para guiar vocabulario o puntuación específica |

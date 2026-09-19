@@ -101,22 +101,26 @@ La configuración se gestiona mediante `env.py` (plantilla en `env.example.py`):
 
 ## 5. Comandos Operativos Clave
 
-* **Ejecutar transcripción sobre `audios/`:**
+* **Información rápida y ayuda:**
   ```bash
-  ./transcribe.py
+  transcribe
+  ```
+* **Ejecutar transcripción en lote sobre la carpeta actual (o `audios/` en el repo):**
+  ```bash
+  transcribe all
+  ```
+* **Transcribir únicamente la pista 1 (voz en off / notas personales):**
+  ```bash
+  transcribe all -t 1
   ```
 * **Procesar un archivo o carpeta específica:**
   ```bash
-  ./transcribe.py /ruta/a/archivo.mka
-  ./transcribe.py /ruta/a/directorio/
+  transcribe /ruta/a/archivo.mka
+  transcribe /ruta/a/directorio/
   ```
 * **Forzar re-procesamiento completo:**
   ```bash
-  ./transcribe.py --force
-  ```
-* **Sobrescribir límite de pistas por CLI:**
-  ```bash
-  ./transcribe.py --max-tracks 2
+  transcribe all --force
   ```
 * **Instalar dependencias en el entorno virtual:**
   ```bash
