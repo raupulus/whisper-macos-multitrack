@@ -53,6 +53,7 @@ audios/**
 *.opus
 *.mp4
 *.mkv
+*.mov
 
 # Transcripciones y temporales
 *.temp.wav

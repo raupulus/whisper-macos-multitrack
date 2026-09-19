@@ -41,7 +41,7 @@ from typing import Any
 
 # Extensiones de audio / vídeo admitidas
 AUDIO_EXTENSIONS = {
-    ".mka", ".mkv", ".mp4", ".m4a", ".mp3",
+    ".mka", ".mkv", ".mp4", ".mov", ".m4a", ".mp3",
     ".wav", ".aac", ".flac", ".ogg", ".opus", ".webm"
 }
 
